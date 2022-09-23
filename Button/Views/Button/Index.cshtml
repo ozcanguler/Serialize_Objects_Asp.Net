@@ -1,0 +1,85 @@
+﻿@model List<Button.Models.ButtonModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+</head>
+
+
+<script>
+    $(document).ready(function () {
+        $(document).contextmenu(function () {
+            return false;
+        });
+    $(".game-button").mousedown(function (event) {
+
+        if (event.which == 3) {
+            console.log("event 3.right click");
+            console.log(this.getAttribute("value"));
+
+            //send this click to ann event in the button controller
+
+            $.post("@Url.Action("OnRightButtonClick","Button")", { mine: this.getAttribute("value") }, function (data) {
+
+
+                //URL, Data and a callback
+                console.log(data);
+                //refresh the entire page
+                $("body").html(data)
+            });
+        }
+    });
+        });
+</script>
+
+<body>
+    <div>
+        <h1>Welcome to the buttons page.</h1>
+        @Html.Label("Playing with buttons")
+        @using (Html.BeginForm("HandleButtonClick", "Button"))
+        {
+            for (int i = 0; i < Model.Count; i++)
+            {
+
+                if (i % 5 == 0)
+                {
+                    <br />
+                }
+                <button class="game-button" type="submit" name="mine" value="@i">
+                    @* submit send a message to server. value is number of the button, button needs to have a form, submit                                                 buttons are for submitting forms  *@
+                    @if (Model[i].Flagged == true)
+                    {
+                        <img src="~/images/flag.png" />
+                    }
+                    else if (Model[i].State == true)
+                    {
+                        <img src="~/images/on.png" />
+                    }
+                    else
+                    {
+                        <img src="~/images/off.png" />
+                    }
+                </button>
+            }
+        }
+
+        @using (Html.BeginForm("OnSave", "Button"))
+        {
+            <button type="submit" name="save">Save Game</button>
+        }
+        @using (Html.BeginForm("OnLoad", "Button"))
+        {
+            <button type="submit" name="load">Load Game</button>
+        }
+
+    </div>
+</body>
+</html>
